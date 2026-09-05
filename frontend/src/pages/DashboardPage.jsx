@@ -6,6 +6,7 @@ import { fmtMinutes, fmtTZS, isFresh, equipmentLabel, fmtTime } from '../format'
 import { KpiCard, SimpleStat, Loading, ErrorNote, StatusChip, SeverityChip } from '../components/ui';
 
 const DAY_MS = 86400000;
+const num = (v) => (v == null || v === '' ? 0 : Number(v));
 
 function IncidentCard({ item }) {
   const fresh = isFresh(item.reported_at);
@@ -36,7 +37,6 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState(null);
   const [incidents, setIncidents] = useState([]);
   const [error, setError] = useState(null);
-  const lastSignature = useRef('');
   const trendRef = useRef(null);
   const donutRef = useRef(null);
   const trendChart = useRef(null);
@@ -52,11 +52,6 @@ export default function DashboardPage() {
           api.get(endpoints.recentIncidents),
         ]);
         if (cancelled) return;
-        const signature = nextIncidents.map((i) => i.id).join(',');
-        if (lastSignature.current && signature !== lastSignature.current) {
-          window.dispatchEvent(new CustomEvent('track360:new-sms'));
-        }
-        lastSignature.current = signature;
         setSummary(nextSummary);
         setIncidents(nextIncidents);
         setError(null);
@@ -74,7 +69,7 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (!summary || !incidents.length) return;
+    if (!summary) return;
     if (!trendChart.current && trendRef.current) {
       trendChart.current = new ApexCharts(trendRef.current, {
         chart: { type: 'bar', height: 320, toolbar: { show: false } },
@@ -123,9 +118,9 @@ export default function DashboardPage() {
     }
 
     if (donutChart.current && trendChart.current) {
-      const ack = Math.max(0, summary.open_incidents - summary.under_repair - summary.new_incidents);
+      const ack = Math.max(0, num(summary.open_incidents) - num(summary.under_repair) - num(summary.new_incidents));
       donutChart.current.updateOptions({ labels: ['NEW', 'ACKNOWLEDGED', 'UNDER_REPAIR'] });
-      donutChart.current.updateSeries([summary.new_incidents, ack, summary.under_repair]);
+      donutChart.current.updateSeries([num(summary.new_incidents), ack, num(summary.under_repair)]);
     }
   }, [summary, incidents]);
 
@@ -144,25 +139,25 @@ export default function DashboardPage() {
         <>
           <div className="row g-3 mb-3">
             <div className="col-6 col-xl-3">
-              <KpiCard icon="ti ti-building-factory" iconClass="bg-primary" title="Total Equipment" value={summary.total_equipment} extra="plant assets" extraClass="text-primary" />
+              <KpiCard icon="ti ti-building-factory" iconClass="bg-primary" title="Total Equipment" value={num(summary.total_equipment)} extra="plant assets" extraClass="text-primary" />
             </div>
             <div className="col-6 col-xl-3">
-              <KpiCard icon="ti ti-message-exclamation" iconClass="bg-danger" title="New Incidents" value={summary.new_incidents} extra="awaiting review" extraClass="text-danger" />
+              <KpiCard icon="ti ti-message-exclamation" iconClass="bg-danger" title="New Incidents" value={num(summary.new_incidents)} extra="awaiting review" extraClass="text-danger" />
             </div>
             <div className="col-6 col-xl-3">
-              <KpiCard icon="ti ti-alert-triangle" iconClass="bg-info" title="Open Incidents" value={summary.open_incidents} extra="not yet resolved" extraClass="text-info" />
+              <KpiCard icon="ti ti-alert-triangle" iconClass="bg-info" title="Open Incidents" value={num(summary.open_incidents)} extra="not yet resolved" extraClass="text-info" />
             </div>
             <div className="col-6 col-xl-3">
-              <KpiCard icon="ti ti-wrench" iconClass="bg-warning" title="Under Repair" value={summary.under_repair} extra="in maintenance" extraClass="text-warning" />
+              <KpiCard icon="ti ti-wrench" iconClass="bg-warning" title="Under Repair" value={num(summary.under_repair)} extra="in maintenance" extraClass="text-warning" />
             </div>
           </div>
 
           <div className="row g-3 mb-3">
             <div className="col-6 col-xl-3">
-              <SimpleStat label="Resolved Today" value={summary.resolved_today} extra={<><i className="ti ti-circle-check"></i> closed incidents</>} extraClass="text-success" />
+              <SimpleStat label="Resolved Today" value={num(summary.resolved_today)} extra={<><i className="ti ti-circle-check"></i> closed incidents</>} extraClass="text-success" />
             </div>
             <div className="col-6 col-xl-3">
-              <SimpleStat label="Incidents This Month" value={summary.incidents_this_month} extra={<><i className="ti ti-calendar-month"></i> reported since the 1st</>} />
+              <SimpleStat label="Incidents This Month" value={num(summary.incidents_this_month)} extra={<><i className="ti ti-calendar-month"></i> reported since the 1st</>} />
             </div>
             <div className="col-6 col-xl-3">
               <SimpleStat label="Maintenance Cost" value={fmtTZS(summary.maintenance_cost)} extra={<><i className="ti ti-cash"></i> total repair spend</>} />

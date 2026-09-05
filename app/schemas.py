@@ -96,3 +96,10 @@ class DashboardSummary(BaseModel):
 class WebhookAck(BaseModel):
     duplicate: bool
     incident_id: int | None = None
+
+
+class ChannelStatus(BaseModel):
+    live: bool
+    received_at: datetime | None = None
+    sender: str | None = None
+    text: str | None = None

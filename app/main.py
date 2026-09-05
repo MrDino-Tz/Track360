@@ -2,7 +2,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
@@ -11,6 +10,7 @@ from app.routers import dashboard, equipment, health, incidents, webhook
 from app.seed import seed_if_empty
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+FRONTEND_DIST = FRONTEND_DIR / "dist"
 
 
 def create_app() -> FastAPI:
@@ -28,12 +28,11 @@ def create_app() -> FastAPI:
     application.include_router(incidents.router)
     application.include_router(dashboard.router)
 
-    if FRONTEND_DIR.exists():
-        application.mount("/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static")
-
-        @application.get("/")
-        def index() -> FileResponse:
-            return FileResponse(FRONTEND_DIR / "index.html")
+    # The React app is served last so API/webhook/health routes keep precedence.
+    # HashRouter means all client-side routes live under `#/`, so no SPA
+    # fallback is needed — only the built index.html and its /assets files.
+    if FRONTEND_DIST.exists():
+        application.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
 
     return application
 

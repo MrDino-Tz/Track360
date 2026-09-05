@@ -7,11 +7,17 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.models import Equipment, Incident
-from app.schemas import CategoryCount, DashboardSummary, FailingEquipment, IncidentOut
+from app.routers.webhook import last_sms_status
+from app.schemas import CategoryCount, ChannelStatus, DashboardSummary, FailingEquipment, IncidentOut
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 OPEN_STATUSES = ("NEW", "ACKNOWLEDGED", "UNDER_REPAIR")
+
+
+@router.get("/channel", response_model=ChannelStatus)
+def channel_status() -> ChannelStatus:
+    return ChannelStatus(live=True, **last_sms_status())
 
 
 @router.get("/summary", response_model=DashboardSummary)

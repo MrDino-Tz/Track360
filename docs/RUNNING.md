@@ -2,6 +2,10 @@
 
 How to get the Track360 (PlantDesk) backend running locally, with or without Docker.
 
+> The backend serves the React single-page app from `frontend/dist`. Before you
+> can use the web UI you must build the frontend first — see
+> [Running the Track360 frontend](FRONTEND.md). The API itself works without it.
+
 ## Prerequisites
 
 - Python 3.11+
@@ -35,7 +39,8 @@ The app is then available at:
 | SMS webhook | `POST http://127.0.0.1:8000/webhooks/africastalking/sms` |
 
 On first start the app creates SQLite at `data/plant.db`, builds the tables, and
-seeds 10 demo plant assets plus historical incidents automatically.
+seeds 10 demo plant assets (equipment inventory). No incidents are seeded — the
+inbox starts empty until real SMS arrive via the webhook.
 
 ## Environment configuration
 
@@ -116,7 +121,7 @@ The app is at http://localhost:8000. SQLite is persisted in the `plant-data` vol
 
 ## Demo procedure
 
-1. Open http://127.0.0.1:8000 and confirm **New Incidents**.
+1. Open http://127.0.0.1:8000 and confirm **New Incidents** starts at 0 / the inbox is empty.
 2. Start the public tunnel and set the Africa's Talking incoming-message callback.
 3. From a phone, SMS the Africa's Talking number: `M04 machine stopped working`.
 4. Africa's Talking POSTs to `/webhooks/africastalking/sms`.

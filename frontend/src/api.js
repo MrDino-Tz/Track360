@@ -25,6 +25,7 @@ export const api = {
 export const endpoints = {
   summary: '/api/dashboard/summary',
   recentIncidents: '/api/dashboard/recent-incidents',
+  channel: '/api/dashboard/channel',
   incidents: (status) => (status ? `/api/incidents?status=${encodeURIComponent(status)}` : '/api/incidents'),
   incident: (id) => `/api/incidents/${id}`,
   equipment: '/api/equipment',

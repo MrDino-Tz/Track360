@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.orm import Session
 
@@ -8,6 +10,12 @@ from app.services.outbound import send_acknowledgement
 from app.services.sms_ingest import DuplicateIncident, ingest_sms
 
 router = APIRouter()
+
+_last_inbound: dict = {"received_at": None, "sender": None, "text": None}
+
+
+def last_sms_status() -> dict:
+    return dict(_last_inbound)
 
 
 @router.post("/webhooks/africastalking/sms")
@@ -36,6 +44,12 @@ async def africastalking_inbound_sms(
         )
     except DuplicateIncident:
         return Response(content="GOOD", media_type="text/plain", status_code=200)
+
+    _last_inbound.update(
+        received_at=datetime.now(timezone.utc),
+        sender=str(sender),
+        text=str(text),
+    )
 
     if get_settings().africastalking_send_ack:
         label = incident.equipment.code if incident.equipment else "Unassigned"

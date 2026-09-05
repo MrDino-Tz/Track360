@@ -1,3 +1,17 @@
+# ---- Frontend build stage ----
+FROM node:20-alpine AS frontend-build
+
+WORKDIR /build
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend/public ./public
+COPY frontend/index.html frontend/vite.config.js ./
+COPY frontend/src ./src
+RUN npm run build
+
+# ---- Runtime stage ----
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -6,7 +20,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-COPY frontend ./frontend
+COPY --from=frontend-build /build/dist ./frontend/dist
 
 RUN mkdir -p /app/data
 

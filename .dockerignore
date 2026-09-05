@@ -7,3 +7,6 @@ data
 .pytest_cache
 tests/test.plant.db
 README.md
+frontend/node_modules
+frontend/dist
+frontend/past

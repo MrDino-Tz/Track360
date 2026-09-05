@@ -5,7 +5,6 @@ import InboxPage from './pages/InboxPage';
 import IncidentDetailPage from './pages/IncidentDetailPage';
 import EquipmentListPage from './pages/EquipmentListPage';
 import EquipmentDetailPage from './pages/EquipmentDetailPage';
-import DocsPage from './pages/DocsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -17,7 +16,6 @@ export default function App() {
         <Route path="/incidents/:id" element={<IncidentDetailPage />} />
         <Route path="/equipment" element={<EquipmentListPage />} />
         <Route path="/equipment/:id" element={<EquipmentDetailPage />} />
-        <Route path="/docs" element={<DocsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
