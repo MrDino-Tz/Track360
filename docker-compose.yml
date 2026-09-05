@@ -1,0 +1,18 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: sqlite:////app/data/plant.db
+      AFRICASTALKING_USERNAME: ${AFRICASTALKING_USERNAME:-sandbox}
+      AFRICASTALKING_API_KEY: ${AFRICASTALKING_API_KEY:-}
+      AFRICASTALKING_SENDER_ID: ${AFRICASTALKING_SENDER_ID:-}
+      AFRICASTALKING_SANDBOX: ${AFRICASTALKING_SANDBOX:-true}
+      AFRICASTALKING_SEND_ACK: ${AFRICASTALKING_SEND_ACK:-false}
+      DEFAULT_PHONE_COUNTRY_CODE: ${DEFAULT_PHONE_COUNTRY_CODE:-255}
+    volumes:
+      - plant-data:/app/data
+
+volumes:
+  plant-data:

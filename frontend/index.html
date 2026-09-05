@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PlantDesk — Equipment Incident Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <div class="brand-mark">PD</div>
+        <div>
+          <strong>PlantDesk</strong>
+          <span>SMS Incident Desk</span>
+        </div>
+      </div>
+      <nav>
+        <a href="#/dashboard" data-route="dashboard">Dashboard</a>
+        <a href="#/incidents" data-route="incidents">Incident Inbox</a>
+        <a href="#/equipment" data-route="equipment">Equipment</a>
+      </nav>
+      <div class="rail-foot">
+        <div class="live-row">
+          <span class="pulse" id="live-dot"></span>
+          <span id="live-label">Waiting for SMS</span>
+        </div>
+        <p>Phone → Africa's Talking → webhook → incident</p>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-sub">Incoming SMS reports become plant incidents.</p>
+        </div>
+        <div class="topbar-meta" id="clock"></div>
+      </header>
+      <section id="app"></section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
