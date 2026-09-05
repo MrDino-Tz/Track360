@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Equipment Detail — Track360</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track360 — equipment incident history for a single plant asset." />
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="./assets/images/favicon_io/site.webmanifest">
+</head>
+
+<body data-page="equipmentDetail">
+  <div id="app-shell"></div>
+
+  <main id="content" class="content py-10">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+              <h1 class="fs-3 mb-1" id="eq-header">Equipment Detail</h1>
+            </div>
+            <div>
+              <a href="inventory.html" class="btn btn-outline-secondary"><i class="ti ti-arrow-left"></i> Back to equipment</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="card h-100"><div class="card-body p-4"><span class="text-secondary small">Incidents</span>
+            <h3 class="mb-0 fw-bold" id="eq-incidents">—</h3></div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card h-100"><div class="card-body p-4"><span class="text-secondary small">Open</span>
+            <h3 class="mb-0 fw-bold" id="eq-open">—</h3></div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card h-100"><div class="card-body p-4"><span class="text-secondary small">Total repair cost</span>
+            <h3 class="mb-0 fw-bold" id="eq-cost">—</h3></div></div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="card h-100"><div class="card-body p-4"><span class="text-secondary small">Total downtime</span>
+            <h3 class="mb-0 fw-bold" id="eq-downtime">—</h3></div></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card table-responsive">
+            <div class="card-header bg-white px-4 py-3"><h4 class="mb-0 h5">History</h4></div>
+            <table class="table mb-0 text-nowrap table-hover">
+              <thead class="table-light border-light">
+                <tr><th>Date</th><th>Message</th><th>Channel</th><th>Status</th><th>Cost</th></tr>
+              </thead>
+              <tbody id="eq-history">
+                <tr><td colspan="5" class="text-center text-secondary py-4">Loading history…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <footer class="text-center py-2 mt-6 text-secondary">
+            <p class="mb-0">Track360 © 2026 — SMS equipment incident desk.</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="./assets/js/track360.js" type="module"></script>
+  <script src="./assets/js/main.js" type="module"></script>
+</body>
+
+</html>

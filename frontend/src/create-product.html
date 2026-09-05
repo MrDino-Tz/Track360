@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Incident Detail — Track360</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track360 — classify, repair, and close an SMS incident." />
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="./assets/images/favicon_io/site.webmanifest">
+</head>
+
+<body data-page="incident">
+  <div id="app-shell"></div>
+
+  <main id="content" class="content py-10">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+              <h1 class="fs-3 mb-1" id="inc-title">Incident Detail</h1>
+              <p class="mb-0">Classify, repair, and close the SMS report</p>
+            </div>
+            <div>
+              <a href="reports.html" class="btn btn-outline-secondary"><i class="ti ti-arrow-left"></i> Back to inbox</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div id="inc-badges" class="mb-3"></div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-5">
+          <div class="card h-100">
+            <div class="card-header bg-white px-4 py-3"><h4 class="mb-0 h5">Original SMS</h4></div>
+            <div class="card-body p-4">
+              <div class="border rounded-2 bg-light p-3 mb-3" id="inc-sms">—</div>
+              <div class="small text-secondary d-flex flex-column gap-2">
+                <span><i class="ti ti-phone me-1"></i> From <strong id="inc-sender">—</strong></span>
+                <span><i class="ti ti-arrow-narrow-right me-1"></i> To <strong id="inc-recipient">—</strong></span>
+                <span><i class="ti ti-message me-1"></i> Channel <strong id="inc-channel">—</strong></span>
+                <span><i class="ti ti-clock me-1"></i> Reported <strong id="inc-reported">—</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header bg-white px-4 py-3"><h4 class="mb-0 h5">Manage Incident</h4></div>
+            <div class="card-body p-4">
+              <form id="incident-form">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="equipment_id" class="form-label">Equipment</label>
+                    <select class="form-select" name="equipment_id"><option value="">Loading…</option></select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" name="category"><option value="">Loading…</option></select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="severity" class="form-label">Severity</label>
+                    <select class="form-select" name="severity"></select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" name="status"></select>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="repair_notes" class="form-label">Repair notes</label>
+                  <textarea class="form-control" name="repair_notes" rows="3" placeholder="What was repaired?"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="repair_cost" class="form-label">Repair cost (TZS)</label>
+                    <input type="number" class="form-control" name="repair_cost" min="0" step="1" placeholder="0" />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="downtime_minutes" class="form-label">Downtime (minutes)</label>
+                    <input type="number" class="form-control" name="downtime_minutes" min="0" step="1" placeholder="0" />
+                  </div>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                  <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> Save changes</button>
+                  <span id="save-msg" class="small"></span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <footer class="text-center py-2 mt-6 text-secondary">
+            <p class="mb-0">Track360 © 2026 — SMS equipment incident desk.</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="./assets/js/track360.js" type="module"></script>
+  <script src="./assets/js/main.js" type="module"></script>
+</body>
+
+</html>

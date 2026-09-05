@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Incident Inbox — Track360</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track360 — every SMS equipment report, newest first." />
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/images/favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="./assets/images/favicon_io/site.webmanifest">
+</head>
+
+<body data-page="inbox">
+  <div id="app-shell"></div>
+
+  <main id="content" class="content py-10">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h1 class="fs-3 mb-1">Incident Inbox</h1>
+              <p class="mb-0">Every SMS report, newest first</p>
+            </div>
+            <span class="small text-secondary" id="inbox-count">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-secondary active" data-status="">ALL</button>
+            <button class="btn btn-sm btn-outline-secondary" data-status="NEW">NEW</button>
+            <button class="btn btn-sm btn-outline-secondary" data-status="ACKNOWLEDGED">ACKNOWLEDGED</button>
+            <button class="btn btn-sm btn-outline-secondary" data-status="UNDER_REPAIR">UNDER_REPAIR</button>
+            <button class="btn btn-sm btn-outline-secondary" data-status="RESOLVED">RESOLVED</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card table-responsive">
+            <table class="table mb-0 text-nowrap table-hover">
+              <thead class="table-light border-light">
+                <tr>
+                  <th>Reported</th>
+                  <th>Equipment</th>
+                  <th>Message</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="inbox-body">
+                <tr><td colspan="6" class="text-center text-secondary py-4">Loading incidents…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <footer class="text-center py-2 mt-6 text-secondary">
+            <p class="mb-0">Track360 © 2026 — SMS equipment incident desk.</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="./assets/js/track360.js" type="module"></script>
+  <script src="./assets/js/main.js" type="module"></script>
+</body>
+
+</html>

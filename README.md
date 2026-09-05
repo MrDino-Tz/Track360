@@ -1,4 +1,4 @@
-# PlantDesk
+# Track360
 
 Manufacturing equipment incident reporting over ordinary SMS.
 
@@ -18,7 +18,7 @@ Africa's Talking
 FastAPI
   → SQLite
   → REST API
-  → PlantDesk dashboard
+  → Track360 dashboard
 ```
 
 Local development uses a public HTTPS tunnel (ngrok or similar) so Africa's Talking can reach the webhook.
@@ -54,16 +54,16 @@ Put your Africa's Talking credentials in `.env`. Never put them in frontend code
 | `AFRICASTALKING_SENDER_ID` | Optional sender ID for acknowledgement SMS |
 | `AFRICASTALKING_SANDBOX` | `true` to use the sandbox messaging endpoint |
 | `AFRICASTALKING_SEND_ACK` | `true` to send an optional acknowledgement SMS after ingest |
-| `DATABASE_URL` | SQLAlchemy URL. Default is SQLite: `sqlite:///./data/plant.db` |
+| `DATABASE_URL` | SQLAlchemy URL. Default is SQLite: `sqlite:///./data/plant360.db` |
 | `DEFAULT_PHONE_COUNTRY_CODE` | Used when an inbound number starts with `0`. Default `255` |
 
 The webhook itself does not need the API key. The key is only used if outbound acknowledgement SMS is enabled.
 
 ## Database initialization
 
-SQLite is created automatically on first start at `data/plant.db`.
+SQLite is created automatically on first start at `data/plant360.db`.
 
-Tables are created with SQLAlchemy `create_all`. If the equipment table is empty, the app seeds 10 plant assets and historical incidents.
+Tables are created with SQLAlchemy `create_all`. If the equipment table is empty, the app seeds 10 plant360 assets and historical incidents.
 
 The schema is PostgreSQL-compatible. To switch later, set `DATABASE_URL` to a Postgres URL. No models need to change.
 
@@ -207,7 +207,7 @@ copy .env.example .env
 docker compose up --build
 ```
 
-The app is at http://localhost:8000. SQLite is stored in the `plant-data` volume.
+The app is at http://localhost:8000. SQLite is stored in the `plant360-data` volume.
 
 ## API
 
