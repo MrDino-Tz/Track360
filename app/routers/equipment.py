@@ -1,6 +1,7 @@
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import Response
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,9 @@ from app.schemas import EquipmentCreate, EquipmentHistoryOut, EquipmentOut, Inci
 router = APIRouter(prefix="/api/equipment", tags=["equipment"])
 
 OPEN_STATUSES = ("NEW", "ACKNOWLEDGED", "UNDER_REPAIR")
+
+CSV_HEADERS = ["code", "name", "equipment_type", "location", "status"]
+STATUS_VALUES = ("OPERATIONAL", "DEGRADED", "MAINTENANCE")
 
 
 @router.get("", response_model=list[EquipmentHistoryOut])
@@ -35,6 +39,63 @@ def create_equipment(payload: EquipmentCreate, db: Session = Depends(get_db)) ->
     db.commit()
     db.refresh(item)
     return item
+
+
+@router.get("/export.csv")
+def export_equipment(db: Session = Depends(get_db)) -> Response:
+    import csv
+    import io
+
+    rows = db.query(Equipment).order_by(Equipment.code.asc()).all()
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(CSV_HEADERS)
+    for item in rows:
+        writer.writerow([item.code, item.name, item.equipment_type, item.location, item.status])
+    return Response(
+        content=buf.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="equipment.csv"'},
+    )
+
+
+@router.post("/bulk")
+async def bulk_upload_equipment(request: Request, db: Session = Depends(get_db)) -> dict:
+    import csv
+    import io
+
+    body = await request.body()
+    text = body.decode("utf-8-sig")
+    reader = csv.DictReader(io.StringIO(text))
+    if not reader.fieldnames or not _csv_has_required(reader.fieldnames):
+        raise HTTPException(status_code=400, detail="CSV must have columns: code, name, equipment_type, location")
+
+    created = 0
+    skipped = 0
+    errors = []
+    for index, raw in enumerate(reader, start=2):
+        code = (raw.get("code") or "").strip().upper()
+        name = (raw.get("name") or "").strip()
+        eq_type = (raw.get("equipment_type") or "").strip()
+        location = (raw.get("location") or "").strip()
+        status = (raw.get("status") or "OPERATIONAL").strip()
+        if not code or not name or not eq_type or not location:
+            errors.append(f"row {index}: missing required field")
+            continue
+        if status not in STATUS_VALUES:
+            status = "OPERATIONAL"
+        if db.query(Equipment).filter(Equipment.code == code).one_or_none():
+            skipped += 1
+            continue
+        db.add(Equipment(code=code, name=name, equipment_type=eq_type, location=location, status=status))
+        created += 1
+    db.commit()
+    return {"created": created, "skipped": skipped, "errors": errors}
+
+
+def _csv_has_required(fieldnames: list[str]) -> bool:
+    norm = {f.strip().lower().replace(" ", "_") for f in fieldnames}
+    return {"code", "name", "equipment_type", "location"}.issubset(norm)
 
 
 @router.get("/{equipment_id}", response_model=EquipmentHistoryOut)

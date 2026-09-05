@@ -20,6 +20,7 @@ export const api = {
   get: (path) => request(path),
   post: (path, data) => request(path, { method: 'POST', body: JSON.stringify(data) }),
   patch: (path, data) => request(path, { method: 'PATCH', body: JSON.stringify(data) }),
+  raw: (path, init = {}) => fetch(path, init),
 };
 
 export const endpoints = {
@@ -31,4 +32,6 @@ export const endpoints = {
   equipment: '/api/equipment',
   equipmentItem: (id) => `/api/equipment/${id}`,
   equipmentIncidents: (id) => `/api/equipment/${id}/incidents`,
+  equipmentExport: '/api/equipment/export.csv',
+  equipmentBulk: '/api/equipment/bulk',
 };
