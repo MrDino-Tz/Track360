@@ -16,8 +16,22 @@ OPEN_STATUSES = ("NEW", "ACKNOWLEDGED", "UNDER_REPAIR")
 
 
 @router.get("/channel", response_model=ChannelStatus)
-def channel_status() -> ChannelStatus:
-    return ChannelStatus(live=True, **last_sms_status())
+def channel_status(db: Session = Depends(get_db)) -> ChannelStatus:
+    status = last_sms_status()
+    if not status.get("received_at"):
+        latest = (
+            db.query(Incident)
+            .filter(Incident.channel == "SMS")
+            .order_by(Incident.reported_at.desc())
+            .first()
+        )
+        if latest:
+            status = {
+                "received_at": latest.reported_at,
+                "sender": latest.sender_phone,
+                "text": latest.original_message,
+            }
+    return ChannelStatus(live=True, **status)
 
 
 @router.get("/summary", response_model=DashboardSummary)

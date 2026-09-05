@@ -29,9 +29,13 @@ export const endpoints = {
   channel: '/api/dashboard/channel',
   incidents: (status) => (status ? `/api/incidents?status=${encodeURIComponent(status)}` : '/api/incidents'),
   incident: (id) => `/api/incidents/${id}`,
+  incidentRewards: (id) => `/api/incidents/${id}/rewards`,
+  incidentReward: (id) => `/api/incidents/${id}/reward`,
   equipment: '/api/equipment',
   equipmentItem: (id) => `/api/equipment/${id}`,
   equipmentIncidents: (id) => `/api/equipment/${id}/incidents`,
   equipmentExport: '/api/equipment/export.csv',
   equipmentBulk: '/api/equipment/bulk',
+  smsSync: '/api/sms/sync',
+  aiChat: '/api/ai/chat',
 };

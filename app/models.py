@@ -51,3 +51,28 @@ class Incident(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
     equipment: Mapped[Equipment | None] = relationship(back_populates="incidents")
+
+    rewards: Mapped[list["Reward"]] = relationship(
+        back_populates="incident", cascade="all, delete-orphan"
+    )
+
+
+class Reward(Base):
+    """A motivational payout (airtime or mobile money) sent to a reporter."""
+
+    __tablename__ = "rewards"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    incident_id: Mapped[int | None] = mapped_column(
+        ForeignKey("incidents.id"), nullable=True, index=True
+    )
+    sender_phone: Mapped[str] = mapped_column(String(32), index=True)
+    method: Mapped[str] = mapped_column(String(32))
+    currency: Mapped[str] = mapped_column(String(8))
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    provider_status: Mapped[str] = mapped_column(String(32), default="QUEUED")
+    provider_reference: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    incident: Mapped[Incident | None] = relationship(back_populates="rewards")

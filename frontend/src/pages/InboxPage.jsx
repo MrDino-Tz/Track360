@@ -11,6 +11,8 @@ export default function InboxPage() {
   const [incidents, setIncidents] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,6 +39,21 @@ export default function InboxPage() {
     };
   }, [status]);
 
+  async function handleSync() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const result = await api.post(endpoints.smsSync, {});
+      setSyncMsg(`Synced ${result.imported ?? 0} new, ${result.prompted ?? 0} prompted, ${result.duplicates ?? 0} duplicate(s), ${result.errors ?? 0} error(s).`);
+      const data = await api.get(endpoints.incidents(status || null));
+      setIncidents(data);
+    } catch (err) {
+      setSyncMsg(`Sync failed: ${err.message}`);
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -44,8 +61,19 @@ export default function InboxPage() {
           <h1 className="fs-3 mb-1">Incident Inbox</h1>
           <p className="mb-0">Every SMS report, newest first</p>
         </div>
-        <span className="small text-secondary">{incidents.length} incidents</span>
+        <div className="d-flex align-items-center gap-2">
+          <span className="small text-secondary">{incidents.length} incidents</span>
+          <button className="btn btn-sm btn-primary" onClick={handleSync} disabled={syncing}>
+            <i className={`ti ${syncing ? 'ti-loader ti-spin' : 'ti-refresh'}`}></i>&nbsp;Sync SMS
+          </button>
+        </div>
       </div>
+
+      {syncMsg && (
+        <div className={`alert py-2 ${syncMsg.startsWith('Sync failed') ? 'alert-danger' : 'alert-success'}`}>
+          {syncMsg}
+        </div>
+      )}
 
       {error && <ErrorNote>Backend unreachable at /api — is FastAPI running on :8000? ({error})</ErrorNote>}
 

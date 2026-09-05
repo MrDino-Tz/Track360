@@ -3,7 +3,7 @@ def _create_sms(client, external_id: str, text: str) -> dict:
         "/webhooks/africastalking/sms",
         data={
             "from": "+255754000111",
-            "to": "20880",
+            "to": "10096",
             "text": text,
             "id": external_id,
             "date": "2026-09-05 10:00:00",

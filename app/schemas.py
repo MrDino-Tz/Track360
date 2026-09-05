@@ -103,3 +103,23 @@ class ChannelStatus(BaseModel):
     received_at: datetime | None = None
     sender: str | None = None
     text: str | None = None
+
+
+class RewardCreate(BaseModel):
+    method: str = Field(..., pattern=r"^(AIRTIME|MOBILE_MONEY)$")
+    amount: int | None = Field(default=None, ge=1)
+
+
+class RewardOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    incident_id: int | None
+    sender_phone: str
+    method: str
+    currency: str
+    amount: Decimal
+    provider_status: str
+    provider_reference: str | None
+    message: str | None
+    created_at: datetime

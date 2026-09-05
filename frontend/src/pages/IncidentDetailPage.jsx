@@ -14,6 +14,10 @@ export default function IncidentDetailPage() {
   const [equipment, setEquipment] = useState([]);
   const [error, setError] = useState(null);
   const [saveMsg, setSaveMsg] = useState(null);
+  const [rewards, setRewards] = useState([]);
+  const [rewardAmount, setRewardAmount] = useState(1000);
+  const [rewardBusy, setRewardBusy] = useState(false);
+  const [rewardMsg, setRewardMsg] = useState(null);
   const [form, setForm] = useState({
     equipment_id: '',
     category: '',
@@ -43,6 +47,7 @@ export default function IncidentDetailPage() {
         setError(null);
       })
       .catch((err) => !cancelled && setError(err.message));
+    api.get(endpoints.incidentRewards(id)).then(setRewards).catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -76,6 +81,32 @@ export default function IncidentDetailPage() {
     }
   }
 
+  async function sendReward(method) {
+    const amount = Number(rewardAmount);
+    if (!amount || amount < 100) {
+      setRewardMsg({ ok: false, text: 'Enter an amount of at least 100.' });
+      return;
+    }
+    setRewardBusy(true);
+    setRewardMsg(null);
+    try {
+      const reward = await api.post(endpoints.incidentReward(id), { method, amount });
+      setRewardMsg({ ok: true, text: `${method} ${amount} TZS sent — status: ${reward.provider_status}` + (reward.provider_reference ? ` (ref ${reward.provider_reference})` : '') });
+      setRewards((prev) => [reward, ...prev]);
+    } catch (err) {
+      let text = err.message;
+      try {
+        const parsed = JSON.parse(err.message);
+        text = parsed.detail || text;
+      } catch {
+        /* keep raw message */
+      }
+      setRewardMsg({ ok: false, text });
+    } finally {
+      setRewardBusy(false);
+    }
+  }
+
   return (
     <div>
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -94,16 +125,62 @@ export default function IncidentDetailPage() {
 
       <div className="row g-3">
         <div className="col-lg-5">
-          <div className="card h-100">
+<div className="card h-100">
             <div className="card-header bg-white px-4 py-3"><h4 className="mb-0 h5">Original SMS</h4></div>
             <div className="card-body p-4">
-              <div className="border rounded-2 bg-light p-3 mb-3">“{incident.original_message}”</div>
+              <div className="border rounded-2 bg-light p-3 mb-3">"{incident.original_message}"</div>
               <div className="small text-secondary d-flex flex-column gap-2">
                 <span><i className="ti ti-phone me-1"></i> From <strong>{incident.sender_phone}</strong></span>
                 <span><i className="ti ti-arrow-narrow-right me-1"></i> To <strong>{incident.recipient_number || '—'}</strong></span>
                 <span><i className="ti ti-message me-1"></i> Channel <strong>{incident.channel}</strong></span>
                 <span><i className="ti ti-clock me-1"></i> Reported <strong>{fmtDate(incident.reported_at)} {fmtTime(incident.reported_at)}</strong></span>
               </div>
+            </div>
+            <div className="card-footer bg-white px-4 pb-4 pt-0 border-0">
+              <h5 className="fs-6 mt-3 mb-1"><i className="ti ti-gift me-1 text-primary"></i> Send reward</h5>
+              <p className="small text-secondary mb-2">Motivate the reporter — airtime or mobile money to {incident.sender_phone}.</p>
+              <div className="input-group mb-2">
+                <span className="input-group-text">TZS</span>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="100"
+                  step="100"
+                  value={rewardAmount}
+                  onChange={(e) => setRewardAmount(e.target.value)}
+                  disabled={rewardBusy}
+                />
+              </div>
+              <div className="d-flex gap-2">
+                <button className="btn btn-sm btn-primary flex-grow-1" onClick={() => sendReward('AIRTIME')} disabled={rewardBusy || !incident.sender_phone}>
+                  <i className={`ti ${rewardBusy ? 'ti-loader ti-spin' : 'ti-device-mobile'}`}></i> Airtime
+                </button>
+                <button className="btn btn-sm btn-success flex-grow-1" onClick={() => sendReward('MOBILE_MONEY')} disabled={rewardBusy || !incident.sender_phone}>
+                  <i className={`ti ${rewardBusy ? 'ti-loader ti-spin' : 'ti-cash'}`}></i> Mobile money
+                </button>
+              </div>
+              {rewardMsg && (
+                <div className={`small mt-2 ${rewardMsg.ok ? 'text-success' : 'text-danger'}`}>{rewardMsg.ok ? '✓' : '✗'} {rewardMsg.text}</div>
+              )}
+              {rewards.length > 0 && (
+                <div className="mt-3">
+                  <div className="small fw-semibold text-secondary mb-1">Reward history</div>
+                  <ul className="list-group list-group-flush">
+                    {rewards.map((r) => (
+                      <li key={r.id} className="list-group-item px-0 py-1 d-flex justify-content-between align-items-center small">
+                        <span>
+                          <span className="badge bg-primary-subtle text-primary me-1">{r.method}</span>
+                          {r.amount} {r.currency}
+                        </span>
+                        <span className="text-secondary">
+                          <span className={`badge ${r.provider_status === 'Failed' ? 'bg-danger' : 'bg-success'}`}>{r.provider_status}</span>
+                          {r.provider_reference && <span className="ms-1">ref {r.provider_reference}</span>}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

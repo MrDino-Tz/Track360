@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import logging
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Request, Response
 from sqlalchemy.orm import Session
@@ -6,8 +7,11 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.database import get_db
 from app.services.callback import parse_africastalking_payload, parse_callback_date
-from app.services.outbound import send_acknowledgement
-from app.services.sms_ingest import DuplicateIncident, ingest_sms
+from app.services.conversation import pending_code, pending_questions, process_inbound
+from app.services.outbound import send_acknowledgement, send_prompt
+from app.services.phone import normalize_phone
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -33,16 +37,17 @@ async def africastalking_inbound_sms(
     if not sender or text is None or str(text).strip() == "":
         return Response(content="BAD", media_type="text/plain", status_code=400)
 
-    try:
-        incident = ingest_sms(
-            db,
-            sender=str(sender),
-            text=str(text),
-            recipient=str(recipient) if recipient else None,
-            external_id=str(external_id) if external_id else None,
-            reported_at=parse_callback_date(payload.get("date")),
-        )
-    except DuplicateIncident:
+    result = process_inbound(
+        db,
+        sender=str(sender),
+        text=str(text),
+        recipient=str(recipient) if recipient else None,
+        external_id=str(external_id) if external_id else None,
+        reported_at=parse_callback_date(payload.get("date")),
+    )
+
+    if result.duplicate:
+        logger.info("Duplicate SMS ignored (external_id=%s)", external_id)
         return Response(content="GOOD", media_type="text/plain", status_code=200)
 
     _last_inbound.update(
@@ -51,8 +56,28 @@ async def africastalking_inbound_sms(
         text=str(text),
     )
 
+    # Two-way: we asked for a description instead of creating an incident.
+    if result.prompted:
+        phone = normalize_phone(str(sender))
+        code = pending_code(phone) or "device"
+        questions = pending_questions(phone)
+        logger.info("%s sent device code only (%r) — prompted for a description", phone, str(text))
+        if get_settings().africastalking_send_ack:
+            background.add_task(send_prompt, phone, code, questions)
+        return Response(content="GOOD", media_type="text/plain", status_code=200)
+
+    incident = result.incident
+    eq_label = incident.equipment.code if incident.equipment else "Unassigned"
+    logger.info(
+        "Inbound SMS from %s -> incident #%s (equipment=%s, category=%s): %r",
+        incident.sender_phone,
+        incident.id,
+        eq_label,
+        incident.category,
+        incident.original_message,
+    )
+
     if get_settings().africastalking_send_ack:
-        label = incident.equipment.code if incident.equipment else "Unassigned"
-        background.add_task(send_acknowledgement, incident.sender_phone, label, incident.id)
+        background.add_task(send_acknowledgement, incident.sender_phone, eq_label, incident.id)
 
     return Response(content="GOOD", media_type="text/plain", status_code=200)

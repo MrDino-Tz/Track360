@@ -4,7 +4,7 @@ WEBHOOK = "/webhooks/africastalking/sms"
 def _sms(**overrides):
     payload = {
         "from": "+255712345678",
-        "to": "20880",
+        "to": "10096",
         "text": "M04 machine stopped working",
         "id": "ATXid_demo_001",
         "date": "2026-09-05 12:42:00",
@@ -44,7 +44,7 @@ def test_sender_number_is_stored_and_normalized(client):
         if item["external_message_id"] == "ATXid_phone"
     )
     assert match["sender_phone"] == "+255712345678"
-    assert match["recipient_number"] == "20880"
+    assert match["recipient_number"] == "10096"
 
 
 def test_known_equipment_code_is_matched(client):
@@ -90,6 +90,6 @@ def test_duplicate_callback_does_not_create_duplicate_incident(client):
 
 
 def test_missing_sender_is_rejected(client):
-    response = client.post(WEBHOOK, data={"text": "hello", "to": "20880"})
+    response = client.post(WEBHOOK, data={"text": "hello", "to": "10096"})
     assert response.status_code == 400
     assert response.text == "BAD"

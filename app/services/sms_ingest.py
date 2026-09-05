@@ -20,6 +20,7 @@ def ingest_sms(
     recipient: str | None = None,
     external_id: str | None = None,
     reported_at=None,
+    forced_equipment_code: str | None = None,
 ) -> Incident:
     sender_phone = normalize_phone(sender)
     message = text.strip()
@@ -34,7 +35,7 @@ def ingest_sms(
         if existing:
             raise DuplicateIncident(existing)
 
-    equipment = detect_equipment(message, db)
+    equipment = _resolve_equipment(message, db, forced_equipment_code)
     incident = Incident(
         equipment_id=equipment.id if equipment else None,
         sender_phone=sender_phone,
@@ -65,3 +66,12 @@ def ingest_sms(
     if incident.equipment_id:
         incident.equipment = db.get(Equipment, incident.equipment_id)
     return incident
+
+
+def _resolve_equipment(message: str, db: Session, forced_code: str | None):
+    if forced_code:
+        code = forced_code.upper().strip()
+        eq = db.query(Equipment).filter(Equipment.code == code).one_or_none()
+        if eq:
+            return eq
+    return detect_equipment(message, db)

@@ -1,1 +1,1 @@
-"""PlantDesk — manufacturing equipment incident reporting."""
+"""Thibitisha — manufacturing equipment incident reporting."""

@@ -7,6 +7,7 @@ const NAV = [
   { to: '/', end: true, icon: 'ti ti-home', label: 'Dashboard' },
   { to: '/incidents', icon: 'ti ti-inbox', label: 'Incident Inbox' },
   { to: '/equipment', icon: 'ti ti-box-seam', label: 'Equipment' },
+  { to: '/ai', icon: 'ti ti-robot', label: 'AI Assistant' },
 ];
 
 const POLL_MS = 4000;
@@ -113,8 +114,8 @@ export default function Layout() {
       <aside id="sidebar" className={sidebarClass}>
         <div className="logo-area">
           <a href="#/" className="d-inline-flex align-items-center gap-2">
-            <img src="/logo-icon.svg" alt="Track360" width="24" />
-            <span className="logo-text fs-6 fw-bold text-dark">Track360</span>
+            <img src="/logo-icon.svg" alt="Thibitisha" width="24" />
+            <span className="logo-text fs-6 fw-bold text-dark">Thibitisha</span>
           </a>
         </div>
         <ul className="nav flex-column">

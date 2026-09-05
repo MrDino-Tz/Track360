@@ -127,8 +127,8 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="fs-3 mb-1">Track360</h1>
-        <p className="mb-0">SMS equipment incident desk — a texted fault becomes a trackable incident.</p>
+        <h1 className="fs-3 mb-1">Thibitisha</h1>
+        <p className="mb-0">SMS &amp; USSD equipment incident desk — a texted fault becomes a trackable incident.</p>
       </div>
 
       {error && <ErrorNote>Backend unreachable at /api — is FastAPI running on :8000? ({error})</ErrorNote>}

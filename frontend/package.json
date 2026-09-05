@@ -1,7 +1,7 @@
 {
-  "name": "track360",
+  "name": "thibitisha",
   "version": "1.0.0",
-  "description": "Track360 equipment incident dashboard",
+  "description": "Thibitisha equipment incident dashboard",
   "main": "index.js",
   "scripts": {
     "dev": "vite",

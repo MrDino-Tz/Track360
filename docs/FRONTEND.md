@@ -1,6 +1,6 @@
-# Running the Track360 frontend
+# Running the Thibitisha frontend
 
-Track360's UI is a **React SPA** built with Vite (Bootstrap/tabler look inherited
+Thibitisha's UI is a **React SPA** built with Vite (Bootstrap/tabler look inherited
 from the InApp template). It talks to the FastAPI backend over `/api/*`.
 
 ## Project layout (frontend/)

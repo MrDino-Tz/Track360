@@ -80,7 +80,7 @@ def test_recent_incidents_endpoint(client):
         "/webhooks/africastalking/sms",
         data={
             "from": "+255712345678",
-            "to": "20880",
+            "to": "10096",
             "text": "M04 machine stopped working",
             "id": "ATXid_feed",
             "date": "2026-09-05 12:42:00",
